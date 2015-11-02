@@ -20,7 +20,7 @@ class BigUnsigned : protected NumberlikeArray<unsigned long>
         typedef unsigned long Blk;
 
         typedef NumberlikeArray<Blk>::Index Index;
-        NumberlikeArray<Blk>::N;
+        using NumberlikeArray<Blk>::N;
 
     protected:
         /* Create a BigUnsigned with a capacity; for internal use */
@@ -60,11 +60,14 @@ class BigUnsigned : protected NumberlikeArray<unsigned long>
         BigUnsigned(unsigned long  x);
         BigUnsigned(         long  x);
         BigUnsigned(unsigned int   x);
-        BigUnsigned(         long  x);
+        BigUnsigned(         int   x);
         BigUnsigned(unsigned short x);
-        BigUnsigned(         long  x);
+        BigUnsigned(         short x);
 
     protected:
+        /* Helpers */
+        template <class X> void initFromPrimitive      (X x);
+        template <class X> void initFromSignedPrimitive(X x);
 
     public:
         /* Converters to primitive integer types */
@@ -75,10 +78,15 @@ class BigUnsigned : protected NumberlikeArray<unsigned long>
         unsigned short toUnsignedShort() const;
         int            toShort()         const;
 
+    protected:
+        /* Helpers */
+        template <class X> X convertToSignedPrimitive() const;
+        template <class X> X convertToPrimitive      () const;
+
         // COMPARISONS
 
         /* Compare this to x like Java's */
-        ComRes compareTo(const BigUnsigned &x) const;
+        CmpRes compareTo(const BigUnsigned &x) const;
 
         /* Oridinary comparison operators */
         bool operator==(const BigUnsigned &x) const {
@@ -186,3 +194,67 @@ inline void BigUnsigned::operator%=(const BigUnsigned &x) {
     // Mods *this by x, don't care about quotient left in q
     divideWithRemainder(x, q);
 }
+
+/* Templates for conversions fo BigUnsigned to and from primitive integers */
+
+// CONSTRUCTION FROM PRIMITIVE INTEGRS
+
+/* Initialize this BigUnsigned from the given primitive integer. The same pattern 
+ * works for all primitive integer types, so put it into a template to reduce code
+ * duplication. Type X could be signed, but x is known to be nonnegative.
+ */
+template <class X>
+void BigUnsigned::initFromPrimitive(X x) {
+    if (x == 0)
+        ; // NumberlikeArray already initialized us to zero
+    else {
+        // Create a single block. blk is NULL, so no need to delete it
+        cap = 1;
+        blk = new Blk[1];
+        len = 1;
+        blk[0] = Blk(x);
+    }
+}
+
+/* Ditto, but first check that x is nonnegative */
+template <class X>
+void BigUnsigned::initFromSignedPrimitive(X x) {
+    if (x < 0)
+        throw "BigUnsigned constructor: "
+            "Cannot construct a BigUnsigned from a negative number";
+    else
+        initFromPrimitive(x);
+}
+
+// CONVERSION TO PRIMITIVE INTEGERS
+
+template <class X>
+X BigUnsigned::convertToPrimitive() const {
+    if (len == 0)
+        // The number is zero; return zero
+        return 0;
+    else if (len == 1) {
+        // The single block might fit in an X. Try the conversion
+        X x = X(blk[0]);
+        // Make sure the result accurately represents the block
+        if (Blk(x) == blk[0])
+            // Successful conversion
+            return x;
+        // Otherwise throws
+    }
+    throw "BigUnsigned::to<Primitive>: "
+        "Value is too big to fit in the requested type";
+}
+
+/* Wrap the above in an x >= 0 test to make sure we got a nonnegative result */
+template <class X>
+X BigUnsigned::convertToSignedPrimitive() const {
+    X x = convertToPrimitive<X>();
+    if (x >= 0)
+        return x;
+    else
+        throw "BigUnsigned::to<Primitive>: "
+            "Value is too big to fit in the requested type";
+}
+
+#endif

@@ -88,7 +88,7 @@ template <class Blk>
 const unsigned int NumberlikeArray<Blk>::N = 8 * sizeof(Blk);
 
 template <class Blk>
-void NumebrlikeArray<Blk>::allocate(Index c) {
+void NumberlikeArray<Blk>::allocate(Index c) {
     // If the requested capacity is more than the current capatity...
     if (c > cap) {
         // Delete the old number array
@@ -156,7 +156,7 @@ NumberlikeArray<Blk>::NumberlikeArray(const Blk *b, Index blen)
 }
 
 template <class Blk>
-void NumberlikeArray<Blk>::operator==(const NumberlikeArray<Blk> &x) const {
+bool NumberlikeArray<Blk>::operator==(const NumberlikeArray<Blk> &x) const {
     if (len != x.len)
         return false;
     else {
