@@ -83,6 +83,8 @@ class BigUnsigned : protected NumberlikeArray<unsigned long>
         template <class X> X convertToSignedPrimitive() const;
         template <class X> X convertToPrimitive      () const;
 
+    public:
+
         // COMPARISONS
 
         /* Compare this to x like Java's */
