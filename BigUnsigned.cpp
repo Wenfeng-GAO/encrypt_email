@@ -119,7 +119,53 @@ void BigUnsigned::add(const BigUnsigned &a, const BigUnsigned &b) {
         blk[i] = a2->blk[i];
 }
 
-
-
-
-
+void BigUnsigned::subtract(const BigUnsigned &a, const BigUnsigned &b) {
+    DTRT_ALIASED(this == &a || this == &b, subtract(a, b));
+    if (b.len == 0) {
+        // If b is zero, copy a
+        operator=(a);
+        return;
+    } else if (a.len < b.len)
+        // If a is shorter than b, the result is negative
+        throw "BigUnsigned::subtract: "
+            "Negative result in unsigned calculation";
+    // Some variables...
+    bool borrowIn, borrowOut;
+    Blk temp;
+    Index i;
+    // Set preliminary length and make room
+    len = a.len;
+    allocate(len);
+    // For each block index that is present in both inputs...
+    for (i = 0, borrowIn = false; i < b.len; ++i) {
+        temp = a.blk[i] - b.blk[i];
+        // If a reverse rollover occurred, the 
+        // result is greater than the block from a
+        borrowOut = (temp > a.blk[i]);
+        // Handle an incoming borrow
+        if (borrowIn) {
+            borrowOut |= (temp == 0);
+            temp --;
+        }
+        blk[i] = temp; // Save the subtraction result
+        borrowIn = borrowOut; // Pass the borrow along
+    }
+    // If there is a borrow left over, decrease blocks until one does 
+    // not reverse rollover
+    for (; i < a.len && borrowIn; ++i) {
+        borrowIn = (a.blk[i] == 0);
+        blk[i] = a.blk[i] - 1;
+    }
+    // If there's still a borrow, the result is negative.
+    // Throw an exception, but zero out this object so as to leave it
+    // in a predictable state.
+    if (borrowIn) {
+        len = 0;
+        throw "BigUnsigned::subtract: Negative result in unsigned calculation";
+    } else
+        // Copy over the rest of the blocks
+        for (; i < a.len; ++i)
+            blk[i] = a.blk[i];
+    // Zap leading zeros
+    zapLeadingZeros();
+}
