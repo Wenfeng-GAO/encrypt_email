@@ -1,0 +1,21 @@
+Date: le 20 Nov 2015
+Author: Wenfeng GAO & Yuhuang Tang
+Projet: Email encrypted
+
+Nous (Wenfeng Gao & Yuhuang TANG)  avons déjà fait tous les TPs, et nous somme 
+encore envie de créer une application utilisé en console pour envoyer et 
+récevoir les encrypted emails.
+
+Mais on a pas finis pour ce projet à cause du temp limit et notre technique
+pauvere en c++. :)
+On a créer quelques choses comme même, on peut générer les grande chiffres
+sans limit et faire les calculs simples. Et pour tous les fonctions, on les
+a écris nous même, c'est-à-dire on n'a pas utilisé aucunne librairie (en effet,
+on a utilisé qu'une librairie:gtest, pour tester ceux qu'on a écris), parce
+qu'on veux apprendre c++ par cet façon.
+
+Ce projet est sur Github https://github.com/Wenfeng-GAO/encrypt_email.
+Et on a ecris un petit wiki pour démonstrer tous les méthodes public qusqu'à
+mantenant: https://github.com/Wenfeng-GAO/encrypt_email/wiki/Library-Document.
+
+On souhaite continuer à finir ce projet dans notre temps libre, c++ est cool!

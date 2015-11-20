@@ -90,4 +90,12 @@ TEST_F(BigUnsignedTest, Operators) {
 
     /* Ordinary comparison operators */
     BigUnsigned v1(1), v2(2), v3(v1);
+    EXPECT_TRUE(v1==v3);
+    EXPECT_TRUE(v1<=v3);
+    EXPECT_TRUE(v1>=v3);
+    EXPECT_TRUE(v1<v2);
+    EXPECT_TRUE(v1<=v2);
+    EXPECT_TRUE(v2>v3);
+    EXPECT_TRUE(v2>=v3);
+    EXPECT_TRUE(v2!=v1);
 }
